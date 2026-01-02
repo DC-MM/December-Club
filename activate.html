@@ -12,7 +12,6 @@
       --gold3:#8b6a22;
       --wine:#5b0f22;
       --ink:#120b0d;
-      --paper:#f5ead0;
       --shadow: 0 26px 90px rgba(0,0,0,.42);
     }
     *{box-sizing:border-box}
@@ -106,7 +105,6 @@
 
     <div class="box">
       <form id="activateForm" autocomplete="off">
-
         <label>Member Number</label>
         <input id="memberNumber" type="text" readonly>
 
@@ -131,12 +129,9 @@
         <input id="passportFile" type="file" accept=".png,.jpg,.jpeg,.pdf">
 
         <label>Signed Protocol (upload)</label>
-
-        <!-- ✅ رابط الملف فوقه مثل ما تبين -->
         <div class="linkline">
           Protocol file: <a href="protocol.pdf" target="_blank" rel="noopener">Download</a>
         </div>
-
         <input id="protocolFile" type="file" accept=".png,.jpg,.jpeg,.pdf">
 
         <button class="btn" id="activateBtn" type="submit">Activate</button>
@@ -156,6 +151,7 @@
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const $ = (id) => document.getElementById(id);
+    function clean(v){ return String(v||"").trim(); }
 
     function showMsg(text, isError=false){
       const el = $("msg");
@@ -169,11 +165,15 @@
       el.classList.remove("error");
       el.style.display = "none";
     }
-    function clean(v){ return String(v||"").trim(); }
 
-    // read member number from URL: ?member=0000
     const params = new URLSearchParams(window.location.search);
-    const member = params.get("member") || "";
+    const member = clean(params.get("member") || "");
+
+    // ✅ Block owner from activation
+    if(member === "0000"){
+      window.location.href = "login.html";
+    }
+
     $("memberNumber").value = member;
 
     if(!member){
@@ -198,7 +198,6 @@
         return;
       }
 
-      // uploads are UI-only for now (we will connect to Storage later)
       if(!$("passportFile").files?.length){
         showMsg("Please upload your passport file.", true);
         return;
@@ -213,7 +212,7 @@
         const { data, error } = await supabase.rpc("activate_member", payload);
 
         if(error){
-          showMsg("Activation error. Check table columns / RLS / functions.", true);
+          showMsg("Activation error. (Functions/columns mismatch)", true);
           return;
         }
 
