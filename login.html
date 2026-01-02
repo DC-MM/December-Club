@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>December Club — Login</title>
+
+  <style>
+    :root{
+      --gold1:#f6e7b2;
+      --gold2:#d9b86a;
+      --gold3:#8b6a22;
+      --wine:#5b0f22;
+      --ink:#120b0d;
+      --paper:#f5ead0;
+      --paper2:#efe0bf;
+      --shadow: 0 26px 90px rgba(0,0,0,.42);
+      --radius: 14px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 650px at 18% 10%, rgba(255,255,255,.35), transparent 60%),
+        radial-gradient(900px 650px at 85% 12%, rgba(255,255,255,.22), transparent 62%),
+        linear-gradient(145deg, var(--gold1), var(--gold2) 45%, var(--gold3));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px 16px;
+    }
+
+    .frame{
+      width:min(900px,100%);
+      padding:26px;
+      border-radius:18px;
+      background:
+        radial-gradient(900px 500px at 50% 0%, rgba(255,255,255,.25), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+      box-shadow: var(--shadow);
+      position:relative;
+    }
+    .frame::before{
+      content:"";
+      position:absolute; inset:0;
+      border-radius:18px;
+      border:2px solid rgba(91,15,34,.75);
+      pointer-events:none;
+    }
+    .frame::after{
+      content:"";
+      position:absolute; inset:12px;
+      border-radius:14px;
+      border:1px solid rgba(91,15,34,.45);
+      pointer-events:none;
+    }
+
+    .panel{
+      background:
+        radial-gradient(900px 540px at 50% 0%, rgba(255,255,255,.34), transparent 62%),
+        linear-gradient(180deg, rgba(245,234,208,.92), rgba(239,224,191,.86));
+      border-radius:12px;
+      border:1px solid rgba(91,15,34,.25);
+      padding:30px 20px 22px;
+      text-align:center;
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size: clamp(36px, 5.6vw, 56px);
+      letter-spacing:.6px;
+      font-weight:600;
+    }
+    .subtitle{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size:13px;
+      color: rgba(18,11,13,.70);
+      margin-bottom:22px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
+      margin-top:10px;
+    }
+    @media (max-width:780px){
+      .grid{ grid-template-columns:1fr; }
+    }
+
+    .card{
+      border-radius:12px;
+      border:1px solid rgba(91,15,34,.25);
+      background: rgba(255,255,255,.14);
+      padding:18px;
+      text-align:left;
+    }
+
+    .card h2{
+      margin:0 0 10px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.9px;
+      color: rgba(18,11,13,.78);
+    }
+
+    label{
+      display:block;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size:12px;
+      color: rgba(18,11,13,.70);
+      margin:10px 0 6px;
+    }
+
+    input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:10px;
+      border:1px solid rgba(91,15,34,.35);
+      background: rgba(255,255,255,.22);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size:14px;
+      outline:none;
+    }
+
+    .btn{
+      margin-top:14px;
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid rgba(91,15,34,.60);
+      background:
+        radial-gradient(300px 120px at 50% 0%, rgba(255,255,255,.25), transparent 60%),
+        linear-gradient(180deg, rgba(245,234,208,.92), rgba(230,210,168,.78));
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
+      font-size:15px;
+      letter-spacing:.3px;
+      cursor:pointer;
+    }
+
+    .note{
+      text-align:center;
+      margin-top:14px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size:12px;
+      color: rgba(18,11,13,.65);
+    }
+  </style>
+</head>
+
+<body>
+  <main class="frame">
+    <section class="panel">
+      <h1>December Club</h1>
+      <div class="subtitle">Member Access — Private Protocol</div>
+
+      <div class="grid">
+        <!-- Existing Member -->
+        <div class="card">
+          <h2>Existing Member</h2>
+          <label>Member Number</label>
+          <input type="text" placeholder="•••••••••" />
+          <label>Password</label>
+          <input type="password" placeholder="Password" />
+          <button class="btn" type="button">Login</button>
+        </div>
+
+        <!-- New Member -->
+        <div class="card">
+          <h2>New Member</h2>
+          <label>Member Number</label>
+          <input type="text" placeholder="Provided after payment" />
+          <button class="btn" type="button">Activate</button>
+        </div>
+      </div>
+
+      <div class="note">
+        Access is granted only upon issuance of a valid membership number.
+      </div>
+    </section>
+  </main>
+</body>
+</html>
