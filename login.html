@@ -153,6 +153,7 @@
       padding-bottom: 2px;
     }
     .backline a:hover{ border-bottom-color: rgba(91,15,34,.70); }
+
     .msg{
       margin-top:10px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -204,7 +205,7 @@
             <label>Member Number</label>
             <input id="newMemberNumber" type="text" placeholder="Provided after payment" />
 
-            <!-- ✅ رجعناها Activate (مو Continue) -->
+            <!-- ✅ تبقى Activate -->
             <button class="btn" id="goActivateBtn" type="submit">Activate</button>
 
             <div class="msg" id="activateMsg"></div>
@@ -229,6 +230,7 @@
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const $ = (id) => document.getElementById(id);
+    function clean(v){ return String(v || "").trim(); }
 
     function showMsg(el, text, isError=false){
       el.textContent = text;
@@ -240,7 +242,6 @@
       el.classList.remove("error");
       el.style.display = "none";
     }
-    function clean(v){ return String(v || "").trim(); }
 
     // Existing member login
     $("loginForm").addEventListener("submit", async (e) => {
@@ -294,55 +295,27 @@
       }
     });
 
-    // New member -> open activate.html (separate page)
-    $("startActivateForm").addEventListener("submit", async (e) => {
+    // New member -> always go to activate.html
+    $("startActivateForm").addEventListener("submit", (e) => {
       e.preventDefault();
       hideMsg($("activateMsg"));
 
       const member_number = clean($("newMemberNumber").value);
+
       if(!member_number){
         showMsg($("activateMsg"), "Please enter your member number.", true);
         return;
       }
 
-      // Optional: quick verify so we don't open page for invalid numbers
-      $("goActivateBtn").disabled = true;
-      try{
-        const { data, error } = await supabase.rpc("login_member", {
-          p_member_number: member_number,
-          p_password: "" // empty, just to check status
-        });
-
-        if(error){
-          showMsg($("activateMsg"), "Server error. Please try again.", true);
-          return;
-        }
-
-        const row = Array.isArray(data) ? data[0] : data;
-        const code = row?.code;
-
-        if(code === "not_found"){
-          showMsg($("activateMsg"), "Member number not found. Please contact administration.", true);
-          return;
-        }
-        if(code === "inactive"){
-          showMsg($("activateMsg"), "This membership is inactive. Please contact administration.", true);
-          return;
-        }
-        if(code === "banned"){
-          showMsg($("activateMsg"), "This membership is blocked.", true);
-          return;
-        }
-        if(code !== "needs_activation"){
-          showMsg($("activateMsg"), "This number is already activated. Please login.", true);
-          return;
-        }
-
-        window.location.href = "activate.html?member=" + encodeURIComponent(member_number);
-
-      } finally {
-        $("goActivateBtn").disabled = false;
+      // ✅ Owner rule: 0000 must login with password (no activation flow)
+      if(member_number === "0000"){
+        showMsg($("activateMsg"), "Owner number (0000) must login with password.", true);
+        $("memberNumber").value = "0000";
+        $("password").focus();
+        return;
       }
+
+      window.location.href = "activate.html?member=" + encodeURIComponent(member_number);
     });
   </script>
 </body>
