@@ -142,6 +142,10 @@
       letter-spacing:.3px;
       cursor:pointer;
     }
+    .btn[disabled]{
+      opacity:.65;
+      cursor:not-allowed;
+    }
 
     .note{
       text-align:center;
@@ -151,7 +155,6 @@
       color: rgba(18,11,13,.65);
     }
 
-    /* ✅ Small safe addition: Back link (no layout breaking) */
     .backline{
       margin-top: 12px;
       text-align:center;
@@ -167,7 +170,25 @@
     .backline a:hover{
       border-bottom-color: rgba(91,15,34,.70);
     }
+
+    /* ✅ message line */
+    .msg{
+      display:none;
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(91,15,34,.25);
+      background: rgba(255,255,255,.14);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size:12px;
+      color: rgba(18,11,13,.80);
+      text-align:center;
+    }
+    .msg.show{display:block;}
   </style>
+
+  <!-- ✅ Supabase JS (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 
 <body>
@@ -181,7 +202,6 @@
         <div class="card">
           <h2>Existing Member</h2>
 
-          <!-- ✅ form so Enter works (no visual change) -->
           <form id="loginForm" autocomplete="off">
             <label>Member Number</label>
             <input id="memberNumber" type="text" placeholder="•••••••••" />
@@ -189,7 +209,7 @@
             <label>Password</label>
             <input id="password" type="password" placeholder="Password" />
 
-            <button class="btn" type="submit">Login</button>
+            <button class="btn" id="loginBtn" type="submit">Login</button>
           </form>
         </div>
 
@@ -197,12 +217,11 @@
         <div class="card">
           <h2>New Member</h2>
 
-          <!-- ✅ form so Enter works (no visual change) -->
           <form id="activateForm" autocomplete="off">
             <label>Member Number</label>
             <input id="newMemberNumber" type="text" placeholder="Provided after payment" />
 
-            <button class="btn" type="submit">Activate</button>
+            <button class="btn" id="activateBtn" type="submit">Activate</button>
           </form>
         </div>
       </div>
@@ -211,7 +230,8 @@
         Access is granted only upon issuance of a valid membership number.
       </div>
 
-      <!-- ✅ Back to home -->
+      <div class="msg" id="msg"></div>
+
       <div class="backline">
         <a href="index.html">Back to Home</a>
       </div>
@@ -219,16 +239,147 @@
   </main>
 
   <script>
-    // Temporary safe behavior until we connect Supabase:
-    // prevent page reload + show message instead of doing nothing.
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
+    // ✅ Your Supabase project
+    const SUPABASE_URL = "https://ybbihnwsjxwjcwebekiq.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_rSr6WD0ZqYPkDrZv1jYHaQ_-CJxwVFx";
+
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const msgEl = document.getElementById("msg");
+    const loginBtn = document.getElementById("loginBtn");
+    const activateBtn = document.getElementById("activateBtn");
+
+    function showMsg(text, isError=false){
+      msgEl.textContent = text;
+      msgEl.classList.add("show");
+      msgEl.style.borderColor = isError ? "rgba(91,15,34,.55)" : "rgba(91,15,34,.25)";
+    }
+
+    function setLoading(btn, loading){
+      btn.disabled = loading;
+      btn.textContent = loading ? "Please wait..." : (btn.id === "loginBtn" ? "Login" : "Activate");
+    }
+
+    function clean(v){ return (v || "").trim(); }
+
+    // ✅ LOGIN (member_number + password) from "members" table
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      alert('Login will be connected soon.');
+
+      const memberNumber = clean(document.getElementById("memberNumber").value);
+      const password = clean(document.getElementById("password").value);
+
+      msgEl.classList.remove("show");
+
+      if(!memberNumber || !password){
+        showMsg("Please enter member number and password.", true);
+        return;
+      }
+
+      setLoading(loginBtn, true);
+
+      try{
+        const { data, error } = await db
+          .from("members")
+          .select("member_number,password,role,status")
+          .eq("member_number", memberNumber)
+          .maybeSingle();
+
+        if(error) throw error;
+
+        if(!data){
+          showMsg("Member number not found.", true);
+          return;
+        }
+
+        if((data.status || "").toLowerCase() === "inactive"){
+          showMsg("This membership is inactive.", true);
+          return;
+        }
+
+        if(data.password !== password){
+          showMsg("Incorrect password.", true);
+          return;
+        }
+
+        // ✅ Save simple session locally (for now)
+        localStorage.setItem("dc_member_session", JSON.stringify({
+          member_number: data.member_number,
+          role: data.role || "member",
+          ts: Date.now()
+        }));
+
+        showMsg("Login successful. Redirecting...");
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 600);
+
+      }catch(err){
+        console.error(err);
+        showMsg("Login error. Check table columns / RLS.", true);
+      }finally{
+        setLoading(loginBtn, false);
+      }
     });
 
-    document.getElementById('activateForm').addEventListener('submit', (e) => {
+    // ✅ ACTIVATE (creates/updates member in members table)
+    // - It will ask you to set a password via prompt (so we don't change the UI)
+    document.getElementById("activateForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      alert('Activation will be connected soon.');
+
+      const memberNumber = clean(document.getElementById("newMemberNumber").value);
+      msgEl.classList.remove("show");
+
+      if(!memberNumber){
+        showMsg("Please enter member number.", true);
+        return;
+      }
+
+      const pass1 = prompt("Set a password for this member number:");
+      if(pass1 === null) return; // cancelled
+      const pass2 = prompt("Confirm password:");
+      if(pass2 === null) return;
+
+      const password = clean(pass1);
+      if(password.length < 4){
+        showMsg("Password is too short (min 4).", true);
+        return;
+      }
+      if(pass1 !== pass2){
+        showMsg("Passwords do not match.", true);
+        return;
+      }
+
+      setLoading(activateBtn, true);
+
+      try{
+        // upsert requires unique constraint on member_number to be perfect,
+        // but will still try insert if not.
+        const payload = {
+          member_number: memberNumber,
+          password: password,
+          role: "member",
+          status: "active"
+        };
+
+        const { error } = await db
+          .from("members")
+          .upsert(payload, { onConflict: "member_number" });
+
+        if(error) throw error;
+
+        showMsg("Activation successful. You can login now.");
+
+        // optional: pre-fill the login form
+        document.getElementById("memberNumber").value = memberNumber;
+        document.getElementById("password").value = "";
+
+      }catch(err){
+        console.error(err);
+        showMsg("Activation error. Check table columns / RLS / unique constraint.", true);
+      }finally{
+        setLoading(activateBtn, false);
+      }
     });
   </script>
 </body>
