@@ -108,7 +108,7 @@
       color: rgba(18,11,13,.70);
       margin:10px 0 6px;
     }
-    input, select{
+    input{
       width:100%;
       padding:12px 12px;
       border-radius:10px;
@@ -132,10 +132,7 @@
       letter-spacing:.3px;
       cursor:pointer;
     }
-    .btn:disabled{
-      opacity:.65;
-      cursor:not-allowed;
-    }
+    .btn:disabled{opacity:.65; cursor:not-allowed;}
     .note{
       text-align:center;
       margin-top:14px;
@@ -155,9 +152,7 @@
       border-bottom: 1px solid rgba(91,15,34,.35);
       padding-bottom: 2px;
     }
-    .backline a:hover{
-      border-bottom-color: rgba(91,15,34,.70);
-    }
+    .backline a:hover{ border-bottom-color: rgba(91,15,34,.70); }
     .msg{
       margin-top:10px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -174,7 +169,6 @@
       border-color: rgba(160, 20, 55, .35);
       background: rgba(255,255,255,.18);
     }
-    .hidden{ display:none !important; }
   </style>
 </head>
 
@@ -206,31 +200,12 @@
         <div class="card">
           <h2>New Member</h2>
 
-          <form id="activateForm" autocomplete="off">
+          <form id="startActivateForm" autocomplete="off">
             <label>Member Number</label>
             <input id="newMemberNumber" type="text" placeholder="Provided after payment" />
 
-            <button class="btn" id="checkBtn" type="button">Continue</button>
-
-            <div id="activationFields" class="hidden">
-              <label>Full Name</label>
-              <input id="fullName" type="text" placeholder="Your name" />
-
-              <label>Email</label>
-              <input id="email" type="email" placeholder="name@example.com" />
-
-              <label>Country</label>
-              <input id="country" type="text" placeholder="UAE" />
-
-              <label>Create Password</label>
-              <input id="newPassword" type="password" placeholder="Create a password" />
-
-              <!-- Upload will be connected later (Storage). For now we just keep it UI-only. -->
-              <label>Signed Protocol (upload later)</label>
-              <input id="protocolFile" type="file" />
-
-              <button class="btn" id="activateBtn" type="submit">Activate</button>
-            </div>
+            <!-- ✅ رجعناها Activate (مو Continue) -->
+            <button class="btn" id="goActivateBtn" type="submit">Activate</button>
 
             <div class="msg" id="activateMsg"></div>
           </form>
@@ -247,14 +222,10 @@
     </section>
   </main>
 
-  <!-- Supabase JS (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
-    // ✅ Your Supabase project details
     const SUPABASE_URL = "https://ybbihnwsjxwjcwebekiq.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_rSr6WD0ZqYPkDrZv1jYHaQ_-CJxwVFx";
-
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const $ = (id) => document.getElementById(id);
@@ -269,18 +240,14 @@
       el.classList.remove("error");
       el.style.display = "none";
     }
-    function cleanMemberNumber(v){
-      return String(v || "").trim();
-    }
+    function clean(v){ return String(v || "").trim(); }
 
-    // -------------------------
-    // Existing member: Login
-    // -------------------------
+    // Existing member login
     $("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       hideMsg($("loginMsg"));
 
-      const member_number = cleanMemberNumber($("memberNumber").value);
+      const member_number = clean($("memberNumber").value);
       const password = $("password").value || "";
 
       if(!member_number){
@@ -308,48 +275,42 @@
 
         if(!row || row.ok !== true){
           const code = row?.code || "unknown";
-
           if(code === "not_found") showMsg($("loginMsg"), "Member number not found.", true);
-          else if(code === "inactive") showMsg($("loginMsg"), "Your membership is inactive. Please contact administration.", true);
+          else if(code === "inactive") showMsg($("loginMsg"), "Your membership is inactive.", true);
           else if(code === "banned") showMsg($("loginMsg"), "Your membership is blocked.", true);
-          else if(code === "needs_activation") showMsg($("loginMsg"), "This number needs activation. Use the Activate section.", true);
+          else if(code === "needs_activation") showMsg($("loginMsg"), "This number needs activation. Use Activate.", true);
           else if(code === "wrong_password") showMsg($("loginMsg"), "Wrong password.", true);
           else showMsg($("loginMsg"), "Login failed.", true);
-
           return;
         }
 
-        // ✅ Save simple session locally (for now)
         localStorage.setItem("dc_member_number", member_number);
         localStorage.setItem("dc_tier", row.tier || "");
         localStorage.setItem("dc_category", row.category || "");
 
-        // ✅ Redirect to your club page (change this file name if needed)
         window.location.href = "club.html";
-
       } finally {
         $("loginBtn").disabled = false;
       }
     });
 
-    // -------------------------
-    // New member: Check number
-    // -------------------------
-    $("checkBtn").addEventListener("click", async () => {
+    // New member -> open activate.html (separate page)
+    $("startActivateForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
       hideMsg($("activateMsg"));
 
-      const member_number = cleanMemberNumber($("newMemberNumber").value);
+      const member_number = clean($("newMemberNumber").value);
       if(!member_number){
-        showMsg($("activateMsg"), "Please enter your member number first.", true);
+        showMsg($("activateMsg"), "Please enter your member number.", true);
         return;
       }
 
-      $("checkBtn").disabled = true;
+      // Optional: quick verify so we don't open page for invalid numbers
+      $("goActivateBtn").disabled = true;
       try{
-        // We use login_member with empty password just to detect if number exists + needs_activation
         const { data, error } = await supabase.rpc("login_member", {
           p_member_number: member_number,
-          p_password: ""
+          p_password: "" // empty, just to check status
         });
 
         if(error){
@@ -362,96 +323,25 @@
 
         if(code === "not_found"){
           showMsg($("activateMsg"), "Member number not found. Please contact administration.", true);
-          $("activationFields").classList.add("hidden");
           return;
         }
-
-        if(code === "banned"){
-          showMsg($("activateMsg"), "This membership is blocked.", true);
-          $("activationFields").classList.add("hidden");
-          return;
-        }
-
         if(code === "inactive"){
           showMsg($("activateMsg"), "This membership is inactive. Please contact administration.", true);
-          $("activationFields").classList.add("hidden");
+          return;
+        }
+        if(code === "banned"){
+          showMsg($("activateMsg"), "This membership is blocked.", true);
+          return;
+        }
+        if(code !== "needs_activation"){
+          showMsg($("activateMsg"), "This number is already activated. Please login.", true);
           return;
         }
 
-        if(code === "already_activated" || code === "wrong_password" || code === "ok"){
-          // if it’s already activated, they should login instead
-          showMsg($("activateMsg"), "This number is already activated. Please use Login.", true);
-          $("activationFields").classList.add("hidden");
-          return;
-        }
-
-        if(code === "needs_activation"){
-          showMsg($("activateMsg"), "Number verified. Please complete your details to activate.", false);
-          $("activationFields").classList.remove("hidden");
-          return;
-        }
-
-        showMsg($("activateMsg"), "Unable to verify. Please try again.", true);
-        $("activationFields").classList.add("hidden");
+        window.location.href = "activate.html?member=" + encodeURIComponent(member_number);
 
       } finally {
-        $("checkBtn").disabled = false;
-      }
-    });
-
-    // -------------------------
-    // New member: Activate
-    // -------------------------
-    $("activateForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      hideMsg($("activateMsg"));
-
-      const member_number = cleanMemberNumber($("newMemberNumber").value);
-      const full_name = ($("fullName").value || "").trim();
-      const email = ($("email").value || "").trim();
-      const country = ($("country").value || "").trim();
-      const password = $("newPassword").value || "";
-
-      if(!member_number){
-        showMsg($("activateMsg"), "Missing member number.", true);
-        return;
-      }
-      if(!full_name || !email || !country || !password){
-        showMsg($("activateMsg"), "Please fill all fields.", true);
-        return;
-      }
-
-      $("activateBtn").disabled = true;
-      try{
-        const { data, error } = await supabase.rpc("activate_member", {
-          p_member_number: member_number,
-          p_password: password,
-          p_full_name: full_name,
-          p_country: country,
-          p_email: email
-        });
-
-        if(error){
-          showMsg($("activateMsg"), "Server error. Please try again.", true);
-          return;
-        }
-
-        const row = Array.isArray(data) ? data[0] : data;
-        if(!row || row.ok !== true){
-          const code = row?.code || "unknown";
-          if(code === "not_found") showMsg($("activateMsg"), "Member number not found.", true);
-          else if(code === "inactive") showMsg($("activateMsg"), "Membership is inactive. Contact administration.", true);
-          else if(code === "banned") showMsg($("activateMsg"), "Membership is blocked.", true);
-          else if(code === "already_activated") showMsg($("activateMsg"), "Already activated. Please login.", true);
-          else showMsg($("activateMsg"), "Activation failed.", true);
-          return;
-        }
-
-        showMsg($("activateMsg"), "Activated successfully. You can login now.", false);
-        $("activationFields").classList.add("hidden");
-
-      } finally {
-        $("activateBtn").disabled = false;
+        $("goActivateBtn").disabled = false;
       }
     });
   </script>
