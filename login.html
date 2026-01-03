@@ -17,10 +17,8 @@
       --shadow: 0 26px 90px rgba(0,0,0,.42);
       --radius: 14px;
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
-
     body{
       margin:0;
       font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
@@ -34,7 +32,6 @@
       justify-content:center;
       padding:24px 16px;
     }
-
     .frame{
       width:min(900px,100%);
       padding:26px;
@@ -59,7 +56,6 @@
       border:1px solid rgba(91,15,34,.45);
       pointer-events:none;
     }
-
     .panel{
       background:
         radial-gradient(900px 540px at 50% 0%, rgba(255,255,255,.34), transparent 62%),
@@ -69,21 +65,18 @@
       padding:30px 20px 22px;
       text-align:center;
     }
-
     h1{
       margin:0 0 10px;
       font-size: clamp(36px, 5.6vw, 56px);
       letter-spacing:.6px;
       font-weight:600;
     }
-
     .subtitle{
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       font-size:13px;
       color: rgba(18,11,13,.70);
       margin-bottom:22px;
     }
-
     .grid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -93,7 +86,6 @@
     @media (max-width:780px){
       .grid{ grid-template-columns:1fr; }
     }
-
     .card{
       border-radius:12px;
       border:1px solid rgba(91,15,34,.25);
@@ -101,7 +93,6 @@
       padding:18px;
       text-align:left;
     }
-
     .card h2{
       margin:0 0 10px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -110,7 +101,6 @@
       letter-spacing:.9px;
       color: rgba(18,11,13,.78);
     }
-
     label{
       display:block;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -118,7 +108,6 @@
       color: rgba(18,11,13,.70);
       margin:10px 0 6px;
     }
-
     input{
       width:100%;
       padding:12px 12px;
@@ -129,7 +118,6 @@
       font-size:14px;
       outline:none;
     }
-
     .btn{
       margin-top:14px;
       width:100%;
@@ -144,11 +132,7 @@
       letter-spacing:.3px;
       cursor:pointer;
     }
-    .btn:disabled{
-      opacity:.65;
-      cursor:not-allowed;
-    }
-
+    .btn:disabled{opacity:.65;cursor:not-allowed}
     .msg{
       margin-top:10px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -161,11 +145,7 @@
       padding: 10px 12px;
       display:none;
     }
-    .msg.error{
-      border-color: rgba(160, 20, 55, .35);
-      background: rgba(255,255,255,.18);
-    }
-
+    .msg.error{ border-color: rgba(160, 20, 55, .35); }
     .note{
       text-align:center;
       margin-top:14px;
@@ -173,7 +153,6 @@
       font-size:12px;
       color: rgba(18,11,13,.65);
     }
-
     .backline{
       margin-top: 12px;
       text-align:center;
@@ -186,9 +165,7 @@
       border-bottom: 1px solid rgba(91,15,34,.35);
       padding-bottom: 2px;
     }
-    .backline a:hover{
-      border-bottom-color: rgba(91,15,34,.70);
-    }
+    .backline a:hover{ border-bottom-color: rgba(91,15,34,.70); }
   </style>
 </head>
 
@@ -199,6 +176,7 @@
       <div class="subtitle">Member Access — Private Protocol</div>
 
       <div class="grid">
+
         <!-- Existing Member -->
         <div class="card">
           <h2>Existing Member</h2>
@@ -219,15 +197,16 @@
         <div class="card">
           <h2>New Member</h2>
 
-          <form id="newForm" autocomplete="off" onsubmit="return false;">
-            <label>Member Number</label>
-            <input id="newMemberNumber" type="text" placeholder="Provided after payment" />
+          <!-- IMPORTANT: type="button" so it never submits the form -->
+          <label>Member Number</label>
+          <input id="newMemberNumber" type="text" placeholder="Provided after payment" />
 
-            <!-- ✅ MUST be button (no reload) -->
-            <button class="btn" id="newBtn" type="button">Activate</button>
-            <div class="msg" id="newMsg"></div>
-          </form>
+          <!-- رجعناها Activate مثل ما تبين -->
+          <button class="btn" id="activateGoBtn" type="button">Activate</button>
+
+          <div class="msg" id="activateMsg"></div>
         </div>
+
       </div>
 
       <div class="note">
@@ -244,7 +223,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    // ✅ Supabase project details
     const SUPABASE_URL = "https://ybbihnwsjxwjcwebekiq.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_rSr6WD0ZqYPkDrZv1jYHaQ_-CJxwVFx";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -261,13 +239,9 @@
       el.classList.remove("error");
       el.style.display = "none";
     }
-    function clean(v){
-      return String(v || "").trim();
-    }
+    function clean(v){ return String(v || "").trim(); }
 
-    // -------------------------
-    // Existing member: Login
-    // -------------------------
+    // Existing Member: Login via RPC
     $("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       hideMsg($("loginMsg"));
@@ -286,7 +260,8 @@
         });
 
         if(error){
-          showMsg($("loginMsg"), "Server error. Please try again.", true);
+          console.error("login_member error:", error);
+          showMsg($("loginMsg"), "Server error. Open Console to see details.", true);
           return;
         }
 
@@ -295,75 +270,44 @@
         if(!row || row.ok !== true){
           const code = row?.code || "unknown";
           if(code === "not_found") showMsg($("loginMsg"), "Member number not found.", true);
-          else if(code === "inactive") showMsg($("loginMsg"), "Membership inactive. Contact administration.", true);
-          else if(code === "banned") showMsg($("loginMsg"), "Membership is blocked.", true);
-          else if(code === "needs_activation") showMsg($("loginMsg"), "This number needs activation. Use New Member.", true);
+          else if(code === "inactive") showMsg($("loginMsg"), "Your membership is inactive.", true);
+          else if(code === "banned") showMsg($("loginMsg"), "Your membership is blocked.", true);
+          else if(code === "needs_activation") showMsg($("loginMsg"), "This number needs activation. Use Activate.", true);
           else if(code === "wrong_password") showMsg($("loginMsg"), "Wrong password.", true);
           else showMsg($("loginMsg"), "Login failed.", true);
           return;
         }
 
-        // save simple session
         localStorage.setItem("dc_member_number", member_number);
         localStorage.setItem("dc_tier", row.tier || "");
         localStorage.setItem("dc_category", row.category || "");
 
-        // redirect (change later)
+        // go to club page
         window.location.assign("club.html");
+
       } finally {
         $("loginBtn").disabled = false;
       }
     });
 
-    // -------------------------
-    // New member: Activate flow
-    // -------------------------
-    $("newBtn").addEventListener("click", async () => {
-      hideMsg($("newMsg"));
+    // New Member: Go to activation pages (NO checks here)
+    $("activateGoBtn").addEventListener("click", () => {
+      hideMsg($("activateMsg"));
 
       const member_number = clean($("newMemberNumber").value);
-      if(!member_number) return showMsg($("newMsg"), "Please enter your member number.", true);
-
-      // ✅ special owner rule
-      if(member_number === "0000"){
-        window.location.assign("owner-password.html?member=0000");
+      if(!member_number){
+        showMsg($("activateMsg"), "Please enter your member number first.", true);
         return;
       }
 
-      $("newBtn").disabled = true;
-      try{
-        // check status using login_member
-        const { data, error } = await supabase.rpc("login_member", {
-          p_member_number: member_number,
-          p_password: "__check__"
-        });
-
-        if(error){
-          showMsg($("newMsg"), "Server error. Please try again.", true);
-          return;
-        }
-
-        const row = Array.isArray(data) ? data[0] : data;
-        const code = row?.code || "unknown";
-
-        if(code === "not_found") return showMsg($("newMsg"), "Member number not found. Contact administration.", true);
-        if(code === "inactive") return showMsg($("newMsg"), "Membership inactive. Contact administration.", true);
-        if(code === "banned") return showMsg($("newMsg"), "Membership is blocked.", true);
-
-        // already activated -> don't allow new member again
-        if(code === "wrong_password" || code === "ok"){
-          return showMsg($("newMsg"), "This number is already activated. Please use Login.", true);
-        }
-
-        if(code === "needs_activation"){
-          window.location.assign("activate.html?member=" + encodeURIComponent(member_number));
-          return;
-        }
-
-        showMsg($("newMsg"), "Unable to continue. Please use Login.", true);
-      } finally {
-        $("newBtn").disabled = false;
+      // 0000 is owner -> password only page
+      if(member_number === "0000"){
+        window.location.assign("owner-password.html?member_number=0000");
+        return;
       }
+
+      // everyone else -> activation page
+      window.location.assign("activate.html?member_number=" + encodeURIComponent(member_number));
     });
   </script>
 </body>
