@@ -7,15 +7,9 @@
 
   <style>
     :root{
-      --gold1:#f6e7b2;
-      --gold2:#d9b86a;
-      --gold3:#8b6a22;
-      --wine:#5b0f22;
-      --ink:#120b0d;
-      --paper:#f5ead0;
-      --paper2:#efe0bf;
+      --gold1:#f6e7b2; --gold2:#d9b86a; --gold3:#8b6a22;
+      --wine:#5b0f22; --ink:#120b0d; --paper:#f5ead0; --paper2:#efe0bf;
       --shadow: 0 26px 90px rgba(0,0,0,.42);
-      --radius: 14px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -27,12 +21,9 @@
         radial-gradient(900px 650px at 18% 10%, rgba(255,255,255,.35), transparent 60%),
         radial-gradient(900px 650px at 85% 12%, rgba(255,255,255,.22), transparent 62%),
         linear-gradient(145deg, var(--gold1), var(--gold2) 45%, var(--gold3));
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:flex; align-items:center; justify-content:center;
       padding:24px 16px;
     }
-
     .frame{
       width:min(900px,100%);
       padding:26px;
@@ -44,20 +35,13 @@
       position:relative;
     }
     .frame::before{
-      content:"";
-      position:absolute; inset:0;
-      border-radius:18px;
-      border:2px solid rgba(91,15,34,.75);
-      pointer-events:none;
+      content:""; position:absolute; inset:0; border-radius:18px;
+      border:2px solid rgba(91,15,34,.75); pointer-events:none;
     }
     .frame::after{
-      content:"";
-      position:absolute; inset:12px;
-      border-radius:14px;
-      border:1px solid rgba(91,15,34,.45);
-      pointer-events:none;
+      content:""; position:absolute; inset:12px; border-radius:14px;
+      border:1px solid rgba(91,15,34,.45); pointer-events:none;
     }
-
     .panel{
       background:
         radial-gradient(900px 540px at 50% 0%, rgba(255,255,255,.34), transparent 62%),
@@ -67,55 +51,31 @@
       padding:30px 20px 22px;
       text-align:center;
     }
-
-    h1{
-      margin:0 0 10px;
-      font-size: clamp(36px, 5.6vw, 56px);
-      letter-spacing:.6px;
-      font-weight:600;
-    }
+    h1{ margin:0 0 10px; font-size: clamp(36px, 5.6vw, 56px); letter-spacing:.6px; font-weight:600; }
     .subtitle{
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      font-size:13px;
-      color: rgba(18,11,13,.70);
+      font-size:13px; color: rgba(18,11,13,.70);
       margin-bottom:22px;
     }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:16px;
-      margin-top:10px;
-    }
-    @media (max-width:780px){
-      .grid{ grid-template-columns:1fr; }
-    }
-
+    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:10px; }
+    @media (max-width:780px){ .grid{ grid-template-columns:1fr; } }
     .card{
-      border-radius:12px;
-      border:1px solid rgba(91,15,34,.25);
+      border-radius:12px; border:1px solid rgba(91,15,34,.25);
       background: rgba(255,255,255,.14);
-      padding:18px;
-      text-align:left;
+      padding:18px; text-align:left;
     }
-
     .card h2{
       margin:0 0 10px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.9px;
+      font-size:12px; text-transform:uppercase; letter-spacing:.9px;
       color: rgba(18,11,13,.78);
     }
-
     label{
       display:block;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      font-size:12px;
-      color: rgba(18,11,13,.70);
+      font-size:12px; color: rgba(18,11,13,.70);
       margin:10px 0 6px;
     }
-
     input{
       width:100%;
       padding:12px 12px;
@@ -126,28 +86,22 @@
       font-size:14px;
       outline:none;
     }
-
     .btn{
-      margin-top:14px;
-      width:100%;
-      padding:12px 14px;
-      border-radius:12px;
+      margin-top:14px; width:100%;
+      padding:12px 14px; border-radius:12px;
       border:1px solid rgba(91,15,34,.60);
       background:
         radial-gradient(300px 120px at 50% 0%, rgba(255,255,255,.25), transparent 60%),
         linear-gradient(180deg, rgba(245,234,208,.92), rgba(230,210,168,.78));
       font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
-      font-size:15px;
-      letter-spacing:.3px;
+      font-size:15px; letter-spacing:.3px;
       cursor:pointer;
     }
     .btn:disabled{ opacity:.65; cursor:not-allowed; }
-
     .msg{
       margin-top:10px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      font-size:12px;
-      line-height:1.35;
+      font-size:12px; line-height:1.35;
       color: rgba(18,11,13,.80);
       background: rgba(255,255,255,.22);
       border: 1px solid rgba(91,15,34,.22);
@@ -155,21 +109,14 @@
       padding: 10px 12px;
       display:none;
     }
-    .msg.error{
-      border-color: rgba(160, 20, 55, .35);
-      background: rgba(255,255,255,.18);
-    }
-
+    .msg.error{ border-color: rgba(160, 20, 55, .35); background: rgba(255,255,255,.18); }
     .note{
-      text-align:center;
-      margin-top:14px;
+      text-align:center; margin-top:14px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      font-size:12px;
-      color: rgba(18,11,13,.65);
+      font-size:12px; color: rgba(18,11,13,.65);
     }
     .backline{
-      margin-top: 12px;
-      text-align:center;
+      margin-top: 12px; text-align:center;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       font-size:12px;
     }
@@ -193,7 +140,6 @@
         <!-- Existing Member -->
         <div class="card">
           <h2>Existing Member</h2>
-
           <form id="loginForm" autocomplete="off">
             <label>Member Number</label>
             <input id="memberNumber" type="text" placeholder="000000000" />
@@ -210,23 +156,21 @@
         <div class="card">
           <h2>New Member</h2>
 
+          <!-- IMPORTANT: button is type="button" so page will NOT reload -->
           <form id="newForm" autocomplete="off">
             <label>Member Number</label>
             <input id="newMemberNumber" type="text" placeholder="Provided after payment" />
 
-            <button class="btn" id="activateGoBtn" type="submit">Activate</button>
+            <!-- ✅ keep the text EXACTLY "Activate" مثل ما طلبتي -->
+            <button class="btn" id="activateGoBtn" type="button">Activate</button>
+
             <div class="msg" id="newMsg"></div>
           </form>
         </div>
       </div>
 
-      <div class="note">
-        Access is granted only upon issuance of a valid membership number.
-      </div>
-
-      <div class="backline">
-        <a href="index.html">Back to Home</a>
-      </div>
+      <div class="note">Access is granted only upon issuance of a valid membership number.</div>
+      <div class="backline"><a href="index.html">Back to Home</a></div>
     </section>
   </main>
 
@@ -250,7 +194,7 @@
     }
     function clean(v){ return String(v || "").trim(); }
 
-    // Existing Member Login -> club.html
+    // Existing Login
     $("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       hideMsg($("loginMsg"));
@@ -268,10 +212,7 @@
           p_password: password
         });
 
-        if(error){
-          showMsg($("loginMsg"), "Server error. Please try again.", true);
-          return;
-        }
+        if(error) return showMsg($("loginMsg"), "Server error. Please try again.", true);
 
         const row = Array.isArray(data) ? data[0] : data;
 
@@ -280,7 +221,7 @@
           if(code === "not_found") showMsg($("loginMsg"), "Member number not found.", true);
           else if(code === "inactive") showMsg($("loginMsg"), "Your membership is inactive.", true);
           else if(code === "banned") showMsg($("loginMsg"), "Your membership is blocked.", true);
-          else if(code === "needs_activation") showMsg($("loginMsg"), "This number needs activation. Use New Member → Activate.", true);
+          else if(code === "needs_activation") showMsg($("loginMsg"), "This number needs activation. Use New Member.", true);
           else if(code === "wrong_password") showMsg($("loginMsg"), "Wrong password.", true);
           else showMsg($("loginMsg"), "Login failed.", true);
           return;
@@ -290,56 +231,60 @@
         localStorage.setItem("dc_tier", row.tier || "");
         localStorage.setItem("dc_category", row.category || "");
 
+        // ✅ go to club
         window.location.href = "club.html";
       } finally {
         $("loginBtn").disabled = false;
       }
     });
 
-    // New Member -> route activation
-    $("newForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    // New Member -> go to activation pages
+    $("activateGoBtn").addEventListener("click", async () => {
       hideMsg($("newMsg"));
 
       const member_number = clean($("newMemberNumber").value);
-      if(!member_number) return showMsg($("newMsg"), "Please enter your member number.", true);
+      if(!member_number) return showMsg($("newMsg"), "Please enter your member number first.", true);
 
+      // special: owner (0000)
       if(member_number === "0000"){
-        sessionStorage.setItem("dc_activate_member_number", member_number);
-        window.location.href = "owner-password.html";
+        sessionStorage.setItem("dc_pending_member_number", "0000");
+        window.location.href = "owner-password.html?mn=0000";
         return;
       }
 
       $("activateGoBtn").disabled = true;
       try{
+        // Use login_member to confirm existence + state
         const { data, error } = await supabase.rpc("login_member", {
           p_member_number: member_number,
-          p_password: ""
+          p_password: "" // empty so it won't pass
         });
 
-        if(error){
-          showMsg($("newMsg"), "Server error. Please try again.", true);
-          return;
-        }
+        if(error) return showMsg($("newMsg"), "Server error. Please try again.", true);
 
         const row = Array.isArray(data) ? data[0] : data;
         const code = row?.code;
 
-        if(code === "not_found") return showMsg($("newMsg"), "Member number not found. Contact administration.", true);
-        if(code === "inactive") return showMsg($("newMsg"), "This membership is inactive.", true);
-        if(code === "banned") return showMsg($("newMsg"), "This membership is blocked.", true);
-
-        if(code === "wrong_password" || code === "ok"){
-          return showMsg($("newMsg"), "This number is already activated. Please use Login.", true);
+        if(code === "not_found"){
+          showMsg($("newMsg"), "Member number not found. Please contact administration.", true);
+          return;
         }
-
+        if(code === "inactive"){
+          showMsg($("newMsg"), "This membership is inactive. Please contact administration.", true);
+          return;
+        }
+        if(code === "banned"){
+          showMsg($("newMsg"), "This membership is blocked.", true);
+          return;
+        }
         if(code === "needs_activation"){
-          sessionStorage.setItem("dc_activate_member_number", member_number);
-          window.location.href = "activate.html";
+          sessionStorage.setItem("dc_pending_member_number", member_number);
+          window.location.href = "activate.html?mn=" + encodeURIComponent(member_number);
           return;
         }
 
-        showMsg($("newMsg"), "Unable to verify. Please try again.", true);
+        // If already has password, they must login (prevent using New Member again)
+        showMsg($("newMsg"), "This number is already activated. Please use Login.", true);
       } finally {
         $("activateGoBtn").disabled = false;
       }
