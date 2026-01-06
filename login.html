@@ -32,6 +32,7 @@
       justify-content:center;
       padding:24px 16px;
     }
+
     .frame{
       width:min(900px,100%);
       padding:26px;
@@ -56,6 +57,7 @@
       border:1px solid rgba(91,15,34,.45);
       pointer-events:none;
     }
+
     .panel{
       background:
         radial-gradient(900px 540px at 50% 0%, rgba(255,255,255,.34), transparent 62%),
@@ -65,6 +67,7 @@
       padding:30px 20px 22px;
       text-align:center;
     }
+
     h1{
       margin:0 0 10px;
       font-size: clamp(36px, 5.6vw, 56px);
@@ -77,6 +80,7 @@
       color: rgba(18,11,13,.70);
       margin-bottom:22px;
     }
+
     .grid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -86,6 +90,7 @@
     @media (max-width:780px){
       .grid{ grid-template-columns:1fr; }
     }
+
     .card{
       border-radius:12px;
       border:1px solid rgba(91,15,34,.25);
@@ -93,6 +98,7 @@
       padding:18px;
       text-align:left;
     }
+
     .card h2{
       margin:0 0 10px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -101,6 +107,7 @@
       letter-spacing:.9px;
       color: rgba(18,11,13,.78);
     }
+
     label{
       display:block;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -108,6 +115,7 @@
       color: rgba(18,11,13,.70);
       margin:10px 0 6px;
     }
+
     input{
       width:100%;
       padding:12px 12px;
@@ -118,6 +126,7 @@
       font-size:14px;
       outline:none;
     }
+
     .btn{
       margin-top:14px;
       width:100%;
@@ -132,7 +141,8 @@
       letter-spacing:.3px;
       cursor:pointer;
     }
-    .btn:disabled{opacity:.65;cursor:not-allowed}
+    .btn:disabled{ opacity:.65; cursor:not-allowed; }
+
     .msg{
       margin-top:10px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -145,7 +155,11 @@
       padding: 10px 12px;
       display:none;
     }
-    .msg.error{ border-color: rgba(160, 20, 55, .35); }
+    .msg.error{
+      border-color: rgba(160, 20, 55, .35);
+      background: rgba(255,255,255,.18);
+    }
+
     .note{
       text-align:center;
       margin-top:14px;
@@ -176,7 +190,6 @@
       <div class="subtitle">Member Access — Private Protocol</div>
 
       <div class="grid">
-
         <!-- Existing Member -->
         <div class="card">
           <h2>Existing Member</h2>
@@ -197,16 +210,14 @@
         <div class="card">
           <h2>New Member</h2>
 
-          <!-- IMPORTANT: type="button" so it never submits the form -->
-          <label>Member Number</label>
-          <input id="newMemberNumber" type="text" placeholder="Provided after payment" />
+          <form id="newForm" autocomplete="off">
+            <label>Member Number</label>
+            <input id="newMemberNumber" type="text" placeholder="Provided after payment" />
 
-          <!-- رجعناها Activate مثل ما تبين -->
-          <button class="btn" id="activateGoBtn" type="button">Activate</button>
-
-          <div class="msg" id="activateMsg"></div>
+            <button class="btn" id="activateGoBtn" type="submit">Activate</button>
+            <div class="msg" id="newMsg"></div>
+          </form>
         </div>
-
       </div>
 
       <div class="note">
@@ -219,9 +230,7 @@
     </section>
   </main>
 
-  <!-- Supabase JS (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
     const SUPABASE_URL = "https://ybbihnwsjxwjcwebekiq.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_rSr6WD0ZqYPkDrZv1jYHaQ_-CJxwVFx";
@@ -241,7 +250,7 @@
     }
     function clean(v){ return String(v || "").trim(); }
 
-    // Existing Member: Login via RPC
+    // Existing Member Login -> club.html
     $("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       hideMsg($("loginMsg"));
@@ -260,8 +269,7 @@
         });
 
         if(error){
-          console.error("login_member error:", error);
-          showMsg($("loginMsg"), "Server error. Open Console to see details.", true);
+          showMsg($("loginMsg"), "Server error. Please try again.", true);
           return;
         }
 
@@ -272,7 +280,7 @@
           if(code === "not_found") showMsg($("loginMsg"), "Member number not found.", true);
           else if(code === "inactive") showMsg($("loginMsg"), "Your membership is inactive.", true);
           else if(code === "banned") showMsg($("loginMsg"), "Your membership is blocked.", true);
-          else if(code === "needs_activation") showMsg($("loginMsg"), "This number needs activation. Use Activate.", true);
+          else if(code === "needs_activation") showMsg($("loginMsg"), "This number needs activation. Use New Member → Activate.", true);
           else if(code === "wrong_password") showMsg($("loginMsg"), "Wrong password.", true);
           else showMsg($("loginMsg"), "Login failed.", true);
           return;
@@ -282,32 +290,59 @@
         localStorage.setItem("dc_tier", row.tier || "");
         localStorage.setItem("dc_category", row.category || "");
 
-        // go to club page
-        window.location.assign("club.html");
-
+        window.location.href = "club.html";
       } finally {
         $("loginBtn").disabled = false;
       }
     });
 
-    // New Member: Go to activation pages (NO checks here)
-    $("activateGoBtn").addEventListener("click", () => {
-      hideMsg($("activateMsg"));
+    // New Member -> route activation
+    $("newForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideMsg($("newMsg"));
 
       const member_number = clean($("newMemberNumber").value);
-      if(!member_number){
-        showMsg($("activateMsg"), "Please enter your member number first.", true);
-        return;
-      }
+      if(!member_number) return showMsg($("newMsg"), "Please enter your member number.", true);
 
-      // 0000 is owner -> password only page
       if(member_number === "0000"){
-        window.location.assign("owner-password.html?member_number=0000");
+        sessionStorage.setItem("dc_activate_member_number", member_number);
+        window.location.href = "owner-password.html";
         return;
       }
 
-      // everyone else -> activation page
-      window.location.assign("activate.html?member_number=" + encodeURIComponent(member_number));
+      $("activateGoBtn").disabled = true;
+      try{
+        const { data, error } = await supabase.rpc("login_member", {
+          p_member_number: member_number,
+          p_password: ""
+        });
+
+        if(error){
+          showMsg($("newMsg"), "Server error. Please try again.", true);
+          return;
+        }
+
+        const row = Array.isArray(data) ? data[0] : data;
+        const code = row?.code;
+
+        if(code === "not_found") return showMsg($("newMsg"), "Member number not found. Contact administration.", true);
+        if(code === "inactive") return showMsg($("newMsg"), "This membership is inactive.", true);
+        if(code === "banned") return showMsg($("newMsg"), "This membership is blocked.", true);
+
+        if(code === "wrong_password" || code === "ok"){
+          return showMsg($("newMsg"), "This number is already activated. Please use Login.", true);
+        }
+
+        if(code === "needs_activation"){
+          sessionStorage.setItem("dc_activate_member_number", member_number);
+          window.location.href = "activate.html";
+          return;
+        }
+
+        showMsg($("newMsg"), "Unable to verify. Please try again.", true);
+      } finally {
+        $("activateGoBtn").disabled = false;
+      }
     });
   </script>
 </body>
