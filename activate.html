@@ -12,137 +12,227 @@
       --gold3:#8b6a22;
       --wine:#5b0f22;
       --ink:#120b0d;
+      --paper:#f5ead0;
+      --paper2:#efe0bf;
       --shadow: 0 26px 90px rgba(0,0,0,.42);
     }
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      min-height:100vh;
       font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
       color: var(--ink);
-      background: linear-gradient(145deg, var(--gold1), var(--gold2) 45%, var(--gold3));
+      background:
+        radial-gradient(900px 650px at 18% 10%, rgba(255,255,255,.35), transparent 60%),
+        radial-gradient(900px 650px at 85% 12%, rgba(255,255,255,.22), transparent 62%),
+        linear-gradient(145deg, var(--gold1), var(--gold2) 45%, var(--gold3));
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:24px;
+      padding:24px 16px;
     }
-    .wrap{
-      width:min(760px,100%);
-      background: rgba(245,234,208,.92);
-      border:2px solid rgba(91,15,34,.7);
-      border-radius:18px;
-      box-shadow: var(--shadow);
+
+    .frame{
+      width:min(900px,100%);
       padding:26px;
+      border-radius:18px;
+      background:
+        radial-gradient(900px 500px at 50% 0%, rgba(255,255,255,.25), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+      box-shadow: var(--shadow);
+      position:relative;
     }
-    h1{margin:0 0 6px; text-align:center; font-size:40px;}
-    .sub{font-family:system-ui; font-size:13px; text-align:center; opacity:.75; margin-bottom:18px;}
-    .box{
-      border:1px solid rgba(91,15,34,.25);
+    .frame::before{
+      content:"";
+      position:absolute; inset:0;
+      border-radius:18px;
+      border:2px solid rgba(91,15,34,.75);
+      pointer-events:none;
+    }
+    .frame::after{
+      content:"";
+      position:absolute; inset:12px;
       border-radius:14px;
-      background: rgba(255,255,255,.25);
-      padding:18px;
+      border:1px solid rgba(91,15,34,.45);
+      pointer-events:none;
     }
-    label{display:block; font-family:system-ui; font-size:12px; margin:10px 0 6px; opacity:.85;}
+
+    .panel{
+      background:
+        radial-gradient(900px 540px at 50% 0%, rgba(255,255,255,.34), transparent 62%),
+        linear-gradient(180deg, rgba(245,234,208,.92), rgba(239,224,191,.86));
+      border-radius:12px;
+      border:1px solid rgba(91,15,34,.25);
+      padding:30px 20px 22px;
+    }
+
+    h1{
+      margin:0 0 6px;
+      font-size: clamp(28px, 4.5vw, 44px);
+      letter-spacing:.5px;
+      font-weight:600;
+      text-align:center;
+    }
+    .subtitle{
+      text-align:center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size:13px;
+      color: rgba(18,11,13,.70);
+      margin-bottom:18px;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width:780px){
+      .row{ grid-template-columns:1fr; }
+    }
+
+    label{
+      display:block;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size:12px;
+      color: rgba(18,11,13,.70);
+      margin:10px 0 6px;
+    }
     input{
       width:100%;
-      padding:12px;
+      padding:12px 12px;
       border-radius:10px;
       border:1px solid rgba(91,15,34,.35);
-      background: rgba(255,255,255,.3);
-      font-family:system-ui;
+      background: rgba(255,255,255,.22);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       font-size:14px;
       outline:none;
     }
-    .btn{
-      width:100%;
-      margin-top:14px;
+
+    .box{
+      margin-top:12px;
       padding:12px;
       border-radius:12px;
+      border:1px solid rgba(91,15,34,.20);
+      background: rgba(255,255,255,.14);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-size:13px;
+      color: rgba(18,11,13,.82);
+      line-height:1.4;
+    }
+
+    .btn{
+      margin-top:14px;
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
       border:1px solid rgba(91,15,34,.60);
-      background: linear-gradient(180deg, #f5ead0, #e4cfa3);
+      background:
+        radial-gradient(300px 120px at 50% 0%, rgba(255,255,255,.25), transparent 60%),
+        linear-gradient(180deg, rgba(245,234,208,.92), rgba(230,210,168,.78));
+      font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
       font-size:15px;
+      letter-spacing:.3px;
       cursor:pointer;
     }
-    .btn:disabled{opacity:.65; cursor:not-allowed;}
+    .btn:disabled{ opacity:.65; cursor:not-allowed; }
+
     .msg{
-      margin-top:12px;
-      font-family:system-ui;
+      margin-top:10px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       font-size:12px;
-      padding:10px 12px;
-      border-radius:10px;
+      line-height:1.35;
+      color: rgba(18,11,13,.80);
+      background: rgba(255,255,255,.22);
+      border: 1px solid rgba(91,15,34,.22);
+      border-radius: 10px;
+      padding: 10px 12px;
       display:none;
-      background: rgba(255,255,255,.35);
-      border:1px solid rgba(91,15,34,.25);
     }
-    .msg.error{border-color:#a01437}
-    .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
-    @media(max-width:700px){.row2{grid-template-columns:1fr}}
-    .linkline{
-      font-family:system-ui;
-      font-size:12px;
-      margin-top:8px;
+    .msg.error{
+      border-color: rgba(160, 20, 55, .35);
+      background: rgba(255,255,255,.18);
     }
-    .linkline a{
-      color:#120b0d;
-      text-decoration:none;
-      border-bottom:1px solid rgba(91,15,34,.35);
-    }
-    .back{
+
+    .backline{
+      margin-top: 12px;
       text-align:center;
-      margin-top:14px;
-      font-family:system-ui;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       font-size:12px;
-      opacity:.8;
     }
-    .back a{color:#120b0d;text-decoration:none;border-bottom:1px solid rgba(91,15,34,.35)}
+    .backline a{
+      color: rgba(18,11,13,.80);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(91,15,34,.35);
+      padding-bottom: 2px;
+    }
+    .backline a:hover{ border-bottom-color: rgba(91,15,34,.70); }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <h1>December Club</h1>
-    <div class="sub">Activation — Add your information</div>
+  <main class="frame">
+    <section class="panel">
+      <h1>Activate Membership</h1>
+      <div class="subtitle">Complete your details to activate your access</div>
 
-    <div class="box">
+      <div class="box" id="memberBox"></div>
+
+      <div class="box">
+        <div><strong>Protocol / Rules PDF</strong></div>
+        <div style="margin-top:6px;">
+          <a id="protocolLink" href="protocol.pdf" target="_blank" rel="noopener">Open Protocol PDF</a>
+        </div>
+        <div style="margin-top:8px; opacity:.85;">
+          Download → sign → upload the signed PDF below.
+        </div>
+      </div>
+
       <form id="activateForm" autocomplete="off">
-        <label>Member Number</label>
-        <input id="memberNumber" type="text" readonly>
-
-        <label>Full Name</label>
-        <input id="fullName" type="text" placeholder="Your full name">
-
-        <div class="row2">
+        <div class="row">
           <div>
-            <label>Email</label>
-            <input id="email" type="email" placeholder="name@example.com">
+            <label>Full Name</label>
+            <input id="fullName" type="text" placeholder="Your full name" />
           </div>
           <div>
             <label>Country</label>
-            <input id="country" type="text" placeholder="UAE">
+            <input id="country" type="text" placeholder="UAE" />
           </div>
         </div>
 
-        <label>Create Password</label>
-        <input id="password" type="password" placeholder="Create a password">
-
-        <label>Passport (upload)</label>
-        <input id="passportFile" type="file" accept=".png,.jpg,.jpeg,.pdf">
-
-        <label>Signed Protocol (upload)</label>
-        <div class="linkline">
-          Protocol file: <a href="protocol.pdf" target="_blank" rel="noopener">Download</a>
+        <div class="row">
+          <div>
+            <label>Email</label>
+            <input id="email" type="email" placeholder="name@example.com" />
+          </div>
+          <div>
+            <label>Create Password</label>
+            <input id="newPassword" type="password" placeholder="Create a password" />
+          </div>
         </div>
-        <input id="protocolFile" type="file" accept=".png,.jpg,.jpeg,.pdf">
+
+        <div class="box">
+          <div><strong>Passport</strong></div>
+          <label>Passport Front</label>
+          <input id="passportFront" type="file" accept="image/*,.pdf" />
+          <label>Selfie (Optional)</label>
+          <input id="passportSelfie" type="file" accept="image/*" />
+        </div>
+
+        <div class="box">
+          <div><strong>Signed Protocol</strong></div>
+          <label>Upload Signed PDF</label>
+          <input id="signedProtocol" type="file" accept="application/pdf" />
+        </div>
 
         <button class="btn" id="activateBtn" type="submit">Activate</button>
         <div class="msg" id="msg"></div>
       </form>
 
-      <div class="back">
+      <div class="backline">
         <a href="login.html">Back to Login</a>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -151,80 +241,72 @@
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const $ = (id) => document.getElementById(id);
-    function clean(v){ return String(v||"").trim(); }
 
-    function showMsg(text, isError=false){
-      const el = $("msg");
+    function showMsg(el, text, isError=false){
       el.textContent = text;
       el.classList.toggle("error", !!isError);
       el.style.display = "block";
     }
-    function hideMsg(){
-      const el = $("msg");
+    function hideMsg(el){
       el.textContent = "";
       el.classList.remove("error");
       el.style.display = "none";
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const member = clean(params.get("member") || "");
-
-    // ✅ Block owner from activation
-    if(member === "0000"){
-      window.location.href = "login.html";
-    }
-
-    $("memberNumber").value = member;
-
-    if(!member){
-      showMsg("Missing member number. Go back to Login.", true);
-      $("activateBtn").disabled = true;
-    }
+    const memberNumber = sessionStorage.getItem("dc_activate_member_number") || "";
+    $("memberBox").innerHTML = memberNumber
+      ? `<strong>Member Number:</strong> ${memberNumber}`
+      : `<strong>Member Number:</strong> (missing) — go back to login and enter your number.`;
 
     $("activateForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      hideMsg();
+      hideMsg($("msg"));
 
-      const payload = {
-        p_member_number: clean($("memberNumber").value),
-        p_password: $("password").value || "",
-        p_full_name: clean($("fullName").value),
-        p_country: clean($("country").value),
-        p_email: clean($("email").value)
-      };
+      const full_name = ($("fullName").value || "").trim();
+      const country = ($("country").value || "").trim();
+      const email = ($("email").value || "").trim();
+      const password = $("newPassword").value || "";
 
-      if(Object.values(payload).some(v => !v)){
-        showMsg("Please fill all fields.", true);
-        return;
+      if(!memberNumber) return showMsg($("msg"), "Missing member number. Go back to Login.", true);
+      if(memberNumber === "0000") return showMsg($("msg"), "Owner number must use the owner page.", true);
+
+      if(!full_name || !country || !email || !password){
+        return showMsg($("msg"), "Please fill all required fields.", true);
       }
 
-      if(!$("passportFile").files?.length){
-        showMsg("Please upload your passport file.", true);
-        return;
-      }
-      if(!$("protocolFile").files?.length){
-        showMsg("Please upload the signed protocol file.", true);
-        return;
-      }
+      const signedFile = $("signedProtocol").files[0];
+      const passportFrontFile = $("passportFront").files[0];
+
+      if(!passportFrontFile) return showMsg($("msg"), "Please upload passport front.", true);
+      if(!signedFile) return showMsg($("msg"), "Please upload the signed protocol PDF.", true);
 
       $("activateBtn").disabled = true;
       try{
-        const { data, error } = await supabase.rpc("activate_member", payload);
+        const { data, error } = await supabase.rpc("activate_member", {
+          p_member_number: memberNumber,
+          p_password: password,
+          p_full_name: full_name,
+          p_country: country,
+          p_email: email
+        });
 
         if(error){
-          showMsg("Activation error. (Functions/columns mismatch)", true);
+          showMsg($("msg"), "Server error. Please try again.", true);
           return;
         }
 
         const row = Array.isArray(data) ? data[0] : data;
         if(!row || row.ok !== true){
-          showMsg("Activation failed.", true);
+          const code = row?.code || "unknown";
+          if(code === "already_activated") showMsg($("msg"), "Already activated. Please login.", true);
+          else showMsg($("msg"), "Activation failed.", true);
           return;
         }
 
-        showMsg("Activated successfully. You can login now.");
-        setTimeout(() => { window.location.href = "login.html"; }, 900);
+        sessionStorage.removeItem("dc_activate_member_number");
+        localStorage.setItem("dc_member_number", memberNumber);
 
+        window.location.href = "club.html";
       } finally {
         $("activateBtn").disabled = false;
       }
